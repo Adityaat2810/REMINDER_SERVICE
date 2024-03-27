@@ -4,14 +4,18 @@ const {PORT} = require('./config/server-config')
 const {sendBasicEmail} = require('./services/email-service')
 const TicketController = require('./controller/ticket-controller')
 
+const { createChannel } = require('./utils/messageQueue')
+
 const cron = require('node-cron')
 const jobs = require('./utils/job')
 
-const setupAndStartServer= () => {
+const setupAndStartServer= async () => {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:true}));
 
+    // we want to use these channel objects inside the controllers 
+    const channel = await createChannel()
 
     app.post('/api/v1/tickets',TicketController.create)
 
