@@ -22,7 +22,7 @@ const setupAndStartServer= async () => {
     // we want to use these channel objects inside the controllers 
     const channel = await createChannel()
     //console.log('channel');
-    subscribeMessage(channel,EmailService.testingQueue,REMINDER_BINDING_KEY)
+    subscribeMessage(channel,EmailService,REMINDER_BINDING_KEY)
 
 
     app.listen(PORT,()=>{

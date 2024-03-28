@@ -25,9 +25,9 @@ const createChannel = async()=>{
 //subscribing to the message queue
 const subscribeMessage = async (channel,service ,binding_key)=>{
     try{
-        //console.log(channel);
+        
         const applicationQueue = await channel.assertQueue('REMINDER_QUEUE');
-       // console.log('clg')
+       
         console.log(applicationQueue);
          channel.bindQueue(applicationQueue.queue,EXCHANGE_NAME,binding_key);
        
@@ -36,7 +36,13 @@ const subscribeMessage = async (channel,service ,binding_key)=>{
         channel.consume(applicationQueue.queue,msg =>{
             console.log('recieved data');
             console.log(msg.content.toString());
-            service(msg.content)
+            const payload = JSON.parse(msg.content.toString());
+            if(payload.service =="DEMO_SERVICE"){
+                //
+                console.log('call demo service');
+                service.testingQueue(payload)
+            }
+            //service(msg.content.toString())
             channel.ack(msg);
          })
 
