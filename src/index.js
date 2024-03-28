@@ -4,20 +4,26 @@ const {PORT} = require('./config/server-config')
 const {sendBasicEmail} = require('./services/email-service')
 const TicketController = require('./controller/ticket-controller')
 
-const { createChannel } = require('./utils/messageQueue')
+const EmailService = require('./services/email-service')
 
 const cron = require('node-cron')
 const jobs = require('./utils/job')
+
+const {subscribeMessage , createChannel}=require('./utils/messageQueue')
+const {REMINDER_BINDING_KEY} = require('./config/server-config')
 
 const setupAndStartServer= async () => {
     const app = express();
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended:true}));
 
+    app.post('/api/v1/tickets',TicketController.create)
+
     // we want to use these channel objects inside the controllers 
     const channel = await createChannel()
+    //console.log('channel');
+    subscribeMessage(channel,EmailService.testingQueue,REMINDER_BINDING_KEY)
 
-    app.post('/api/v1/tickets',TicketController.create)
 
     app.listen(PORT,()=>{
         console.log(`Server started at port ${PORT}`);

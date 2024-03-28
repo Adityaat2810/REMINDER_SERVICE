@@ -45,6 +45,10 @@ const createNotification = async(data)=>{
     }
 }
 
+const testingQueue = async(data)=>{
+    console.log("inside service layer ", data);
+}
+
 const updateTicket = async (status,ticketId)=>{
     try{
         const response = await ticketRepository.update(status,ticketId)
@@ -58,7 +62,8 @@ module.exports = {
     sendBasicEmail,
     fetchPendingEmails,
     createNotification,
-    updateTicket
+    updateTicket,
+    testingQueue
 }
 
 /**

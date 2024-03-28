@@ -1,4 +1,4 @@
-const amqplib=require('amqplib');
+const amqplib = require('amqplib')
 const {EXCHANGE_NAME  , MESSAGE_BROKER_URL} = require('../config/server-config')
 //creating the channel 
 const createChannel = async()=>{
@@ -25,16 +25,23 @@ const createChannel = async()=>{
 //subscribing to the message queue
 const subscribeMessage = async (channel,service ,binding_key)=>{
     try{
-        const applicationQueue = await channel.assertExchange("QUEUE_NAME");
-        channel.bindQueue(queue.queue,EXCHANGE_NAME,binding_key);
+        //console.log(channel);
+        const applicationQueue = await channel.assertQueue('REMINDER_QUEUE');
+       // console.log('clg')
+        console.log(applicationQueue);
+         channel.bindQueue(applicationQueue.queue,EXCHANGE_NAME,binding_key);
+       
 
-        channel.consume(applicationQueue,msg =>{
+
+        channel.consume(applicationQueue.queue,msg =>{
             console.log('recieved data');
             console.log(msg.content.toString());
+            service(msg.content)
             channel.ack(msg);
          })
 
     }catch(error){
+        console.log(error)
         throw {error}
     }
     
@@ -43,6 +50,8 @@ const subscribeMessage = async (channel,service ,binding_key)=>{
 //publish the message 
 const publishMessage = async(channel, binding_key,message) =>{
     try{
+
+        await channel.assertQueue('REMINDER_QUEUE')
         await channel.publish(EXCHANGE_NAME,binding_key,Buffer.from(message));
 
 
